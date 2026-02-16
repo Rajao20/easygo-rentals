@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EasyGo Rentals — Premium Car Rentals</title>
+  <style>
+    :root{
+      --bg:#0b0f1a; --panel:rgba(17,24,42,.65); --panel2:rgba(255,255,255,.04);
+      --text:#eaf0ff; --muted:#b7c3e6; --line:rgba(255,255,255,.12);
+      --brand:#7aa7ff; --brand2:#a78bfa; --ok:#46e6a6; --warn:#ffd166;
+      --shadow:0 18px 60px rgba(0,0,0,.35);
+      --radius:18px; --max:1120px;
+      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;font-family:var(--font);color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(122,167,255,.25), transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, rgba(167,139,250,.18), transparent 45%),
+        var(--bg);
+    }
+    a{color:inherit}
+    .wrap{max-width:var(--max);margin:0 auto;padding:18px 16px 70px}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:12px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(17,24,42,.55);
+      backdrop-filter: blur(10px); box-shadow: var(--shadow);
+      position:sticky; top:12px; z-index:20;
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+    .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(90deg,var(--brand),var(--brand2))}
+    .nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .nav button{
+      cursor:pointer;border:1px solid transparent;background:transparent;color:var(--muted);
+      padding:8px 10px;border-radius:999px;font-weight:700;font-size:13px;
+    }
+    .nav button:hover{background:rgba(255,255,255,.06);color:var(--text);border-color:var(--line)}
+    .nav .cta{background:linear-gradient(90deg,var(--brand),var(--brand2));color:#0b0f1a;border:none}
+    .hero{
+      margin-top:16px;border:1px solid var(--line);border-radius:var(--radius);
+      background:
+        linear-gradient(135deg, rgba(122,167,255,.14), rgba(167,139,250,.10)),
+        radial-gradient(1000px 400px at 60% 0%, rgba(255,255,255,.08), transparent 55%),
+        rgba(17,24,42,.55);
+      box-shadow:var(--shadow); overflow:hidden;
+    }
+    .hero-in{padding:42px 22px;display:grid;grid-template-columns:1.25fr .75fr;gap:16px;align-items:center}
+    h1{margin:0 0 10px;font-size:44px;line-height:1.05}
+    .sub{margin:0 0 18px;color:var(--muted);font-size:16px;line-height:1.55;max-width:62ch}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{
+      cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);
+      padding:12px 14px;border-radius:12px;text-decoration:none;font-weight:900;font-size:14px;
+      display:inline-flex;align-items:center;gap:10px;
+    }
+    .btn.primary{background:linear-gradient(90deg,var(--brand),var(--brand2));border:none;color:#0b0f1a}
+    .btn:hover{transform:translateY(-1px)}
+    .hero-card{
+      border:1px solid var(--line);border-radius:16px;background:rgba(11,15,26,.55);
+      padding:16px;min-height:160px
+    }
+    .tag{display:inline-flex;font-size:12px;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.03)}
+    .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+    .kpi{border:1px solid var(--line);border-radius:14px;padding:12px;background:rgba(255,255,255,.04)}
+    .kpi b{display:block;font-size:16px}
+    .kpi span{color:var(--muted);font-size:12px}
+
+    section{margin-top:18px}
+    .panel{
+      border:1px solid var(--line);border-radius:var(--radius);
+      background:var(--panel);box-shadow:var(--shadow);padding:18px;
+    }
+    .panel h2{margin:0 0 8px;font-size:18px}
+    .panel p{margin:0;color:var(--muted);line-height:1.6}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    .card{
+      border:1px solid var(--line);border-radius:16px;background:var(--panel2);
+      padding:14px;
+    }
+    .card h3{margin:10px 0 6px;font-size:16px}
+    .card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+
+    /* Fleet controls */
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .search{
+      flex:1;min-width:220px;display:flex;gap:10px;align-items:center;
+      border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.04);padding:10px 12px;
+    }
+    .search input{
+      width:100%;border:none;outline:none;background:transparent;color:var(--text);
+      font-weight:700;font-size:14px;
+    }
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.03);
+      color:var(--muted);padding:8px 10px;border-radius:999px;font-weight:800;font-size:12px;
+    }
+    .chip.active{background:linear-gradient(90deg, rgba(122,167,255,.35), rgba(167,139,250,.25));color:var(--text)}
+    .fleet{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    .car{
+      border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);
+      overflow:hidden;display:flex;flex-direction:column;
+    }
+    .car .img{
+      height:130px;background:
+        radial-gradient(600px 200px at 20% 20%, rgba(122,167,255,.22), transparent 55%),
+        radial-gradient(500px 200px at 80% 40%, rgba(167,139,250,.18), transparent 55%),
+        rgba(11,15,26,.6);
+      border-bottom:1px solid var(--line);
+      display:flex;align-items:flex-end;justify-content:space-between;padding:10px 12px;
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      border:1px solid var(--line);background:rgba(0,0,0,.22);padding:6px 10px;border-radius:999px;
+      font-size:12px;color:var(--muted);font-weight:800;
+    }
+    .price{color:var(--text);font-weight:900}
+    .car .body{padding:12px}
+    .car .name{font-weight:1000;font-size:16px;margin:0}
+    .meta{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.5}
+    .car .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .btn.small{padding:10px 12px;border-radius:12px;font-size:13px}
+
+    /* Table */
+    .table-wrap{margin-top:12px;overflow:auto;border-radius:16px;border:1px solid var(--line)}
+    table{width:100%;border-collapse:collapse;min-width:720px;background:rgba(255,255,255,.03)}
+    th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+    th{color:var(--muted);font-weight:900}
+    .hl{background:rgba(122,167,255,.10)}
+    .toggle{
+      display:flex;align-items:center;gap:10px;margin-top:12px;
+      border:1px solid var(--line);border-radius:999px;padding:8px 10px;background:rgba(255,255,255,.03);
+      width:max-content;
+    }
+    .switch{
+      width:44px;height:24px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.06);position:relative;cursor:pointer;
+    }
+    .switch::after{
+      content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;
+      background:linear-gradient(90deg,var(--brand),var(--brand2));
+      transition:transform .2s ease;
+    }
+    .switch.on::after{transform:translateX(20px)}
+    .switch-label{font-weight:900;font-size:13px;color:var(--muted)}
+    .switch-label strong{color:var(--text)}
+
+    /* Accordion */
+    .acc{margin-top:12px;display:grid;gap:10px}
+    .acc-item{
+      border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.03);
+      overflow:hidden;
+    }
+    .acc-btn{
+      width:100%;text-align:left;cursor:pointer;
+      background:transparent;border:none;color:var(--text);padding:12px 14px;
+      display:flex;justify-content:space-between;align-items:center;font-weight:1000;
+    }
+    .acc-body{padding:0 14px 12px;color:var(--muted);line-height:1.6;display:none}
+    .acc-item.open .acc-body{display:block}
+    .chev{color:var(--muted);font-weight:900}
+
+    /* Contact */
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    .field{display:grid;gap:6px;margin-top:10px}
+    label{font-size:12px;color:var(--muted);font-weight:800}
+    input, select, textarea{
+      width:100%;border:1px solid var(--line);border-radius:14px;
+      background:rgba(255,255,255,.04);color:var(--text);padding:10px 12px;
+      outline:none;font-weight:700;font-size:14px;
+    }
+    textarea{min-height:110px;resize:vertical}
+    .mapbox iframe{width:100%;height:330px;border:0;border-radius:14px;margin-top:10px}
+    .mini{font-size:12px;color:var(--muted);line-height:1.6;margin-top:8px}
+
+    /* Modal */
+    .backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,.62);
+      display:none;align-items:center;justify-content:center;padding:16px;z-index:50;
+    }
+    .modal{
+      width:min(900px, 100%);border:1px solid var(--line);border-radius:18px;
+      background:rgba(11,15,26,.92);box-shadow:var(--shadow);overflow:hidden;
+    }
+    .modal-head{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      padding:12px 14px;border-bottom:1px solid var(--line);
+      background:linear-gradient(135deg, rgba(122,167,255,.12), rgba(167,139,250,.08));
+    }
+    .modal-title{font-weight:1000}
+    .x{
+      cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.04);
+      color:var(--text);border-radius:12px;padding:8px 10px;font-weight:1000;
+    }
+    .modal-body{padding:14px}
+    .toast{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(17,24,42,.85);color:var(--text);display:none;z-index:60;
+      box-shadow:var(--shadow);font-weight:900;font-size:13px
+    }
+
+    @media (max-width:920px){
+      .hero-in{grid-template-columns:1fr}
+      h1{font-size:36px}
+      .grid,.fleet{grid-template-columns:1fr}
+      .two{grid-template-columns:1fr}
+      .nav{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="brand"><span class="dot"></span> EasyGo Rentals</div>
+      <div class="nav">
+        <button data-go="#home">Home</button>
+        <button data-go="#fleet">Fleet</button>
+        <button data-go="#gold">EasyGo Gold</button>
+        <button data-go="#services">Services</button>
+        <button data-go="#about">About</button>
+        <button data-go="#contact" class="cta">Book Now</button>
+      </div>
+    </header>
+
+    <!-- HOME -->
+    <section id="home" class="hero" aria-label="Home">
+      <div class="hero-in">
+        <div>
+          <h1>The Road is Calling. Answer in Style.</h1>
+          <p class="sub">
+            Premium car rentals made effortless. From sleek city sedans to rugged luxury SUVs,
+            EasyGo Rentals delivers the keys to your next great story.
+          </p>
+          <div class="row">
+            <button class="btn primary" id="browseBtn">Browse the Fleet →</button>
+            <button class="btn" id="quickBookBtn">Quick Booking</button>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <div class="tag">Fast booking • Transparent pricing</div>
+          <div class="kpis">
+            <div class="kpi"><b>24/7</b><span>Roadside assistance</span></div>
+            <div class="kpi"><b>VIP</b><span>Curbside delivery</span></div>
+            <div class="kpi"><b>50-pt</b><span>Vehicle inspection</span></div>
+            <div class="kpi"><b>EV</b><span>Green Motion options</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 3-STEP -->
+    <section class="panel" aria-label="Three step process">
+      <h2>The Three-Step Process</h2>
+      <div class="grid">
+        <div class="card">
+          <span class="tag">1 • Choose</span>
+          <h3>Pick your perfect ride</h3>
+          <p>Choose from a curated premium fleet designed for city, business, and adventure.</p>
+        </div>
+        <div class="card">
+          <span class="tag">2 • Book</span>
+          <h3>Seamless checkout</h3>
+          <p>Clear pricing, simple add-ons, and instant confirmation for peace of mind.</p>
+        </div>
+        <div class="card">
+          <span class="tag">3 • Drive</span>
+          <h3>Skip the counter</h3>
+          <p>Use digital key (when available) or get VIP curbside delivery to save time.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLEET -->
+    <section id="fleet" class="panel" aria-label="Fleet">
+      <h2>The Elite Fleet (Interactive)</h2>
+      <p>Use the search + filters. Click “Details” or “Book”.</p>
+
+      <div class="controls">
+        <div class="search" title="Search cars">
+          🔎 <input id="q" placeholder="Search: Audi, BMW, SUV, EV..." autocomplete="off" />
+        </div>
+        <div class="chips" id="chips"></div>
+      </div>
+
+      <div class="fleet" id="fleetGrid"></div>
+      <p class="mini">Tip: tu peux ajouter de vraies images plus tard — ici c’est une maquette premium.</p>
+    </section>
+
+    <!-- GOLD -->
+    <section id="gold" class="panel" aria-label="EasyGo Gold">
+      <h2>EasyGo Gold (Interactive Toggle)</h2>
+      <p>Join the Inner Circle. Compare Standard vs Gold.</p>
+
+      <div class="toggle">
+        <div class="switch" id="goldSwitch" aria-label="Toggle Gold"></div>
+        <div class="switch-label">Mode: <strong id="modeLabel">Standard</strong></div>
+      </div>
+
+      <div class="table-wrap" role="region" aria-label="Gold benefits table">
+        <table id="goldTable">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th id="thStd">Standard</th>
+              <th id="thGold">EasyGo Gold</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Booking</td><td>Online</td><td>Priority Mobile App</td></tr>
+            <tr><td>Queue</td><td>In-office</td><td>Skip the Counter</td></tr>
+            <tr><td>Upgrades</td><td>Based on price</td><td>Complimentary (When available)</td></tr>
+            <tr><td>Fuel</td><td>Refill required</td><td>First tank included</td></tr>
+            <tr><td>Late Return</td><td>1-hour grace</td><td>4-hour grace period</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="joinGoldBtn">Become Gold →</button>
+        <button class="btn" id="openGoldBooking">Book with Gold perks</button>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services" class="panel" aria-label="Services">
+      <h2>Concierge & Business Services (Accordion)</h2>
+      <p>High-margin add-ons for busy professionals.</p>
+
+      <div class="acc" id="servicesAcc">
+        <div class="acc-item open">
+          <button class="acc-btn" type="button">
+            Door-to-Door Delivery <span class="chev">▾</span>
+          </button>
+          <div class="acc-body">
+            We value your time. We’ll drop your rental at your home, office, or hotel, and pick it up when you're done.
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button">
+            The Chauffeur Option <span class="chev">▾</span>
+          </button>
+          <div class="acc-body">
+            Need to work on the go? Book a professional driver with your luxury rental for ultimate productivity.
+          </div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button">
+            Corporate Solutions <span class="chev">▾</span>
+          </button>
+          <div class="acc-body">
+            Centralized billing, dedicated account managers, and fixed corporate rates for your entire team.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="panel" aria-label="About">
+      <h2>About Us & Trust</h2>
+      <p><strong>Our Mission:</strong> To redefine the rental experience by removing the friction of traditional car hire.</p>
+
+      <div class="acc" style="margin-top:12px" id="trustAcc">
+        <div class="acc-item open">
+          <button class="acc-btn" type="button">No Hidden Fees <span class="chev">▾</span></button>
+          <div class="acc-body">What you see is exactly what you pay — transparent pricing from checkout to return.</div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button">Pristine Fleet <span class="chev">▾</span></button>
+          <div class="acc-body">Every vehicle undergoes a 50-point safety and cleanliness inspection before every trip.</div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-btn" type="button">Real Humans 24/7 <span class="chev">▾</span></button>
+          <div class="acc-body">Support is staffed by experts, not bots — roadside and booking help any time.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="panel" aria-label="Contact">
+      <h2>Contact & Support</h2>
+      <p>Direct line, email, simple contact form, and interactive map.</p>
+
+      <div class="two">
+        <div class="card">
+          <div class="mini"><strong>Direct Line (24/7):</strong> 1-800-EASY-GO</div>
+          <div class="mini"><strong>Email:</strong> concierge@easygorentals.com</div>
+
+          <div class="row" style="margin-top:10px">
+            <a class="btn primary" href="tel:1800327946">Call Now</a>
+            <a class="btn" href="mailto:concierge@easygorentals.com?subject=EasyGo%20Support%20Request">Email Support</a>
+          </div>
+
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" placeholder="Your name" />
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label for="topic">Topic</label>
+            <select id="topic">
+              <option>Booking</option>
+              <option>Membership (Gold)</option>
+              <option>Corporate</option>
+              <option>Roadside Assistance</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="msg">Message</label>
+            <textarea id="msg" placeholder="Write your message..."></textarea>
+          </div>
+
+          <button class="btn primary" id="sendMsg">Send Message</button>
+          <p class="mini">This form is a demo (no database). For your assignment, it’s enough to show UX + validation.</p>
+        </div>
+
+        <div class="card mapbox">
+          <div class="row">
+            <button class="chip active" data-loc="airport">Airport Hub</button>
+            <button class="chip" data-loc="city">City Hub</button>
+            <button class="chip" data-loc="hotel">Hotel Delivery</button>
+          </div>
+
+          <iframe id="map"
+            src="https://www.google.com/maps?q=SSR%20International%20Airport%20Mauritius&output=embed"
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            title="EasyGo Locations Map"></iframe>
+
+          <p class="mini">Sur Google Sites tu peux aussi intégrer une Map native (Insert → Map). Ici c’est interactif avec boutons.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="mini" style="margin-top:16px;opacity:.9">
+      © EasyGo Rentals — Premium mobility, simplified.
+    </div>
+  </div>
+
+  <!-- MODAL (Details + Booking) -->
+  <div class="backdrop" id="backdrop" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title" id="modalTitle">Booking</div>
+        <button class="x" id="closeModal" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---------- Data ----------
+    const cars = [
+      { id:"a6", name:"Audi A6", cat:"Executive", seats:5, trans:"Automatic", price:120, perks:["Leather","Business comfort"] },
+      { id:"bmw5", name:"BMW 5 Series", cat:"Executive", seats:5, trans:"Automatic", price:130, perks:["Sport mode","Premium audio"] },
+      { id:"eclass", name:"Mercedes-Benz E-Class", cat:"Executive", seats:5, trans:"Automatic", price:140, perks:["Quiet cabin","Safety tech"] },
+
+      { id:"rrs", name:"Range Rover Sport", cat:"SUV", seats:5, trans:"Automatic", price:180, perks:["4x4","Luxury SUV"] },
+      { id:"modelx", name:"Tesla Model X", cat:"SUV", seats:7, trans:"Automatic", price:170, perks:["EV","AWD","Family space"] },
+      { id:"escalade", name:"Cadillac Escalade", cat:"SUV", seats:7, trans:"Automatic", price:220, perks:["VIP comfort","Full-size"] },
+
+      { id:"taycan", name:"Porsche Taycan", cat:"EV", seats:4, trans:"Automatic", price:200, perks:["Performance EV","Premium handling"] },
+      { id:"lucid", name:"Lucid Air", cat:"EV", seats:5, trans:"Automatic", price:190, perks:["Long range","Luxury EV"] },
+      { id:"model3", name:"Tesla Model 3", cat:"EV", seats:5, trans:"Automatic", price:110, perks:["Efficient","Smart features"] },
+    ];
+
+    const categories = ["All","Executive","SUV","EV"];
+
+    // ---------- Helpers ----------
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+    function goTo(hash){
+      const el = document.querySelector(hash);
+      if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+    }
+
+    function toast(msg){
+      const t = $("#toast");
+      t.textContent = msg;
+      t.style.display = "block";
+      clearTimeout(window.__t);
+      window.__t = setTimeout(()=> t.style.display="none", 2200);
+    }
+
+    // ---------- Nav ----------
+    $$(".nav button[data-go]").forEach(b=>{
+      b.addEventListener("click", ()=> goTo(b.dataset.go));
+    });
+
+    $("#browseBtn").addEventListener("click", ()=> goTo("#fleet"));
+    $("#quickBookBtn").addEventListener("click", ()=> openBookingModal(null));
+
+    // ---------- Chips ----------
+    const chipsEl = $("#chips");
+    let activeCat = "All";
+    function renderChips(){
+      chipsEl.innerHTML = "";
+      categories.forEach(cat=>{
+        const btn = document.createElement("button");
+        btn.className = "chip" + (cat===activeCat ? " active":"");
+        btn.textContent = cat;
+        btn.addEventListener("click", ()=>{
+          activeCat = cat;
+          renderChips();
+          renderFleet();
+        });
+        chipsEl.appendChild(btn);
+      });
+    }
+
+    // ---------- Fleet ----------
+    const grid = $("#fleetGrid");
+    function match(car, q){
+      const query = (q||"").trim().toLowerCase();
+      const okQ = !query || (car.name.toLowerCase().includes(query) || car.cat.toLowerCase().includes(query));
+      const okC = (activeCat==="All") || (car.cat===activeCat);
+      return okQ && okC;
+    }
+
+    function renderFleet(){
+      const q = $("#q").value || "";
+      const list = cars.filter(c=> match(c,q));
+      grid.innerHTML = "";
+
+      if(list.length===0){
+        const empty = document.createElement("div");
+        empty.className="card";
+        empty.innerHTML = "<h3>No results</h3><p>Try another search or select a different category.</p>";
+        grid.appendChild(empty);
+        return;
+      }
+
+      list.forEach(car=>{
+        const el = document.createElement("div");
+        el.className="car";
+        el.innerHTML = `
+          <div class="img">
+            <span class="pill">${car.cat}</span>
+            <span class="pill"><span class="price">$${car.price}</span>/day</span>
+          </div>
+          <div class="body">
+            <p class="name">${car.name}</p>
+            <div class="meta">${car.seats} seats • ${car.trans} • ${car.perks.join(" • ")}</div>
+            <div class="actions">
+              <button class="btn small" data-details="${car.id}">Details</button>
+              <button class="btn small primary" data-book="${car.id}">Book</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(el);
+      });
+
+      $$("[data-details]").forEach(b=> b.onclick = ()=> openDetailsModal(b.dataset.details));
+      $$("[data-book]").forEach(b=> b.onclick = ()=> openBookingModal(b.dataset.book));
+    }
+
+    $("#q").addEventListener("input", renderFleet);
+
+    // ---------- Modal ----------
+    const backdrop = $("#backdrop");
+    const modalTitle = $("#modalTitle");
+    const modalBody = $("#modalBody");
+
+    function openModal(title, bodyHtml){
+      modalTitle.textContent = title;
+      modalBody.innerHTML = bodyHtml;
+      backdrop.style.display = "flex";
+    }
+    function closeModal(){
+      backdrop.style.display = "none";
+      modalBody.innerHTML = "";
+    }
+    $("#closeModal").addEventListener("click", closeModal);
+    backdrop.addEventListener("click", (e)=>{ if(e.target===backdrop) closeModal(); });
+
+    function openDetailsModal(carId){
+      const car = cars.find(c=> c.id===carId);
+      if(!car) return;
+      openModal("Vehicle Details", `
+        <div class="card" style="margin-bottom:12px">
+          <div class="tag">${car.cat}</div>
+          <h3 style="margin:10px 0 6px">${car.name}</h3>
+          <p style="margin:0;color:var(--muted);line-height:1.6">
+            ${car.seats} seats • ${car.trans} • ${car.perks.join(" • ")}
+          </p>
+          <p style="margin-top:10px;color:var(--muted);line-height:1.6">
+            Daily rate: <strong style="color:var(--text)">$${car.price}</strong>. Transparent pricing — no hidden fees.
+          </p>
+        </div>
+
+        <div class="row">
+          <button class="btn primary" id="bookFromDetails">Book this car →</button>
+          <button class="btn" id="closeFromDetails">Close</button>
+        </div>
+      `);
+
+      $("#bookFromDetails").onclick = ()=> { closeModal(); openBookingModal(carId); };
+      $("#closeFromDetails").onclick = closeModal;
+    }
+
+    function daysBetween(a,b){
+      const d1 = new Date(a), d2 = new Date(b);
+      const ms = d2 - d1;
+      const days = Math.ceil(ms / (1000*60*60*24));
+      return isFinite(days) && days>0 ? days : 0;
+    }
+
+    function openBookingModal(carId){
+      const carOptions = cars.map(c=> `<option value="${c.id}" ${c.id===carId?"selected":""}>${c.name} — $${c.price}/day</option>`).join("");
+      openModal("Booking (Interactive Quote)", `
+        <div class="two" style="margin-top:0">
+          <div class="card">
+            <div class="field">
+              <label>Vehicle</label>
+              <select id="bkCar">${carOptions}</select>
+            </div>
+
+            <div class="field">
+              <label>Pickup date</label>
+              <input id="bkStart" type="date" />
+            </div>
+
+            <div class="field">
+              <label>Return date</label>
+              <input id="bkEnd" type="date" />
+            </div>
+
+            <div class="field">
+              <label>Pickup location</label>
+              <select id="bkLoc">
+                <option>Airport Hub</option>
+                <option>City Hub</option>
+                <option>Hotel Delivery</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Add-ons</label>
+              <select id="bkAdd">
+                <option value="0">None</option>
+                <option value="25">Child seat (+$25/day)</option>
+                <option value="35">VIP curbside delivery (+$35/day)</option>
+                <option value="60">Chauffeur option (+$60/day)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Membership</label>
+              <select id="bkMem">
+                <option value="standard">Standard</option>
+                <option value="gold">EasyGo Gold</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="tag">Instant estimate</div>
+            <h3 style="margin:10px 0 6px">Your Quote</h3>
+            <p style="margin:0;color:var(--muted);line-height:1.6" id="quoteLine">
+              Choose dates to calculate your total.
+            </p>
+
+            <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+              <div class="mini" id="perkLine">Perks: —</div>
+            </div>
+
+            <div class="row" style="margin-top:12px">
+              <button class="btn primary" id="confirmBk">Confirm Booking</button>
+              <button class="btn" id="cancelBk">Cancel</button>
+            </div>
+
+            <p class="mini">Demo only: shows UX + pricing logic for your assignment.</p>
+          </div>
+        </div>
+      `);
+
+      const bkCar = $("#bkCar");
+      const bkStart = $("#bkStart");
+      const bkEnd = $("#bkEnd");
+      const bkAdd = $("#bkAdd");
+      const bkMem = $("#bkMem");
+      const quoteLine = $("#quoteLine");
+      const perkLine = $("#perkLine");
+
+      function updateQuote(){
+        const car = cars.find(c=> c.id === bkCar.value);
+        const d = daysBetween(bkStart.value, bkEnd.value);
+        const add = Number(bkAdd.value || 0);
+        const mem = bkMem.value;
+
+        if(!car || d===0){
+          quoteLine.innerHTML = "Choose valid pickup/return dates to calculate your total.";
+          perkLine.innerHTML = "Perks: —";
+          return;
+        }
+
+        const base = (car.price + add) * d;
+
+        // Gold perks: small discount + tank included (simulated) + longer grace
+        const discount = mem==="gold" ? 0.08 : 0;
+        const total = Math.round(base * (1 - discount));
+
+        const perks = mem==="gold"
+          ? `Gold perks: <span style="color:var(--ok);font-weight:900">8% discount</span> • First tank included • 4-hour grace`
+          : `Standard perks: Transparent pricing • 1-hour grace`;
+
+        quoteLine.innerHTML =
+          `<strong style="color:var(--text)">${d} day(s)</strong> • ` +
+          `Base: $${car.price}/day` + (add?` + Add-on $${add}/day`:"") +
+          `<br><span style="color:var(--warn);font-weight:900">Estimated Total: $${total}</span>`;
+
+        perkLine.innerHTML = perks;
+      }
+
+      [bkCar,bkStart,bkEnd,bkAdd,bkMem].forEach(el=> el.addEventListener("input", updateQuote));
+      $("#cancelBk").onclick = closeModal;
+      $("#confirmBk").onclick = ()=>{
+        updateQuote();
+        closeModal();
+        toast("✅ Booking request saved (demo).");
+        goTo("#contact");
+      };
+
+      updateQuote();
+    }
+
+    // ---------- Gold toggle ----------
+    let goldMode = false;
+    const goldSwitch = $("#goldSwitch");
+    const modeLabel = $("#modeLabel");
+    const thStd = $("#thStd");
+    const thGold = $("#thGold");
+    function applyGoldMode(){
+      goldSwitch.classList.toggle("on", goldMode);
+      modeLabel.textContent = goldMode ? "EasyGo Gold" : "Standard";
+      thGold.classList.toggle("hl", goldMode);
+      thStd.classList.toggle("hl", !goldMode);
+      toast(goldMode ? "Gold perks activated ✨" : "Standard mode");
+    }
+    goldSwitch.addEventListener("click", ()=>{ goldMode = !goldMode; applyGoldMode(); });
+    $("#joinGoldBtn").addEventListener("click", ()=>{ goldMode = true; applyGoldMode(); });
+    $("#openGoldBooking").addEventListener("click", ()=>{
+      goldMode = true; applyGoldMode();
+      openBookingModal(null);
+      // set membership to gold after modal open
+      setTimeout(()=> { const sel = document.querySelector("#bkMem"); if(sel) sel.value="gold"; }, 50);
+    });
+
+    // ---------- Accordions ----------
+    function wireAccordion(rootSel){
+      const root = document.querySelector(rootSel);
+      if(!root) return;
+      root.querySelectorAll(".acc-item").forEach(item=>{
+        item.querySelector(".acc-btn").addEventListener("click", ()=>{
+          item.classList.toggle("open");
+        });
+      });
+    }
+    wireAccordion("#servicesAcc");
+    wireAccordion("#trustAcc");
+
+    // ---------- Map switching ----------
+    const map = $("#map");
+    const locBtns = $$("#contact .mapbox .chip");
+    const mapSrc = {
+      airport:"https://www.google.com/maps?q=SSR%20International%20Airport%20Mauritius&output=embed",
+      city:"https://www.google.com/maps?q=Port%20Louis%20Mauritius&output=embed",
+      hotel:"https://www.google.com/maps?q=Grand%20Baie%20Mauritius&output=embed"
+    };
+    locBtns.forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        locBtns.forEach(b=> b.classList.remove("active"));
+        btn.classList.add("active");
+        const key = btn.dataset.loc;
+        map.src = mapSrc[key] || mapSrc.airport;
+      });
+    });
+
+    // ---------- Contact validation (demo) ----------
+    $("#sendMsg").addEventListener("click", ()=>{
+      const name = $("#name").value.trim();
+      const email = $("#email").value.trim();
+      const msg = $("#msg").value.trim();
+      if(name.length<2){ toast("⚠️ Please enter your name."); return; }
+      if(!email.includes("@")){ toast("⚠️ Please enter a valid email."); return; }
+      if(msg.length<8){ toast("⚠️ Message is too short."); return; }
+      toast("✅ Message sent (demo).");
+      $("#msg").value = "";
+    });
+
+    // Init
+    renderChips();
+    renderFleet();
+    applyGoldMode();
+  </script>
+</body>
+</html>
