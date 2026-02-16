@@ -39,6 +39,7 @@
     }
     .nav button:hover{background:rgba(255,255,255,.06);color:var(--text);border-color:var(--line)}
     .nav .cta{background:linear-gradient(90deg,var(--brand),var(--brand2));color:#0b0f1a;border:none}
+
     .hero{
       margin-top:16px;border:1px solid var(--line);border-radius:var(--radius);
       background:
@@ -99,25 +100,52 @@
       color:var(--muted);padding:8px 10px;border-radius:999px;font-weight:800;font-size:12px;
     }
     .chip.active{background:linear-gradient(90deg, rgba(122,167,255,.35), rgba(167,139,250,.25));color:var(--text)}
+
     .fleet{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
     .car{
       border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);
       overflow:hidden;display:flex;flex-direction:column;
     }
+
+    /* Photo header */
     .car .img{
-      height:130px;background:
-        radial-gradient(600px 200px at 20% 20%, rgba(122,167,255,.22), transparent 55%),
-        radial-gradient(500px 200px at 80% 40%, rgba(167,139,250,.18), transparent 55%),
-        rgba(11,15,26,.6);
+      position:relative;
+      height:175px;
+      background:#0b0f1a;
       border-bottom:1px solid var(--line);
-      display:flex;align-items:flex-end;justify-content:space-between;padding:10px 12px;
+      overflow:hidden;
     }
+    .car .img img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      filter:saturate(1.06) contrast(1.05);
+      transform:scale(1.02);
+    }
+    .car .img::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.65));
+    }
+    .car .img .overlay{
+      position:absolute;
+      left:10px; right:10px; bottom:10px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      z-index:2;
+    }
+
     .pill{
       display:inline-flex;align-items:center;gap:8px;
-      border:1px solid var(--line);background:rgba(0,0,0,.22);padding:6px 10px;border-radius:999px;
+      border:1px solid var(--line);background:rgba(0,0,0,.25);padding:6px 10px;border-radius:999px;
       font-size:12px;color:var(--muted);font-weight:800;
+      backdrop-filter: blur(6px);
     }
     .price{color:var(--text);font-weight:900}
+
     .car .body{padding:12px}
     .car .name{font-weight:1000;font-size:16px;margin:0}
     .meta{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.5}
@@ -182,7 +210,7 @@
       display:none;align-items:center;justify-content:center;padding:16px;z-index:50;
     }
     .modal{
-      width:min(900px, 100%);border:1px solid var(--line);border-radius:18px;
+      width:min(920px, 100%);border:1px solid var(--line);border-radius:18px;
       background:rgba(11,15,26,.92);box-shadow:var(--shadow);overflow:hidden;
     }
     .modal-head{
@@ -196,6 +224,11 @@
       color:var(--text);border-radius:12px;padding:8px 10px;font-weight:1000;
     }
     .modal-body{padding:14px}
+    .modal-photo{
+      width:100%;height:240px;border-radius:16px;overflow:hidden;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);margin-bottom:12px;
+    }
+    .modal-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.06) contrast(1.05)}
     .toast{
       position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
       padding:10px 12px;border-radius:14px;border:1px solid var(--line);
@@ -209,6 +242,7 @@
       .grid,.fleet{grid-template-columns:1fr}
       .two{grid-template-columns:1fr}
       .nav{display:none}
+      .car .img{height:200px}
     }
   </style>
 </head>
@@ -278,7 +312,7 @@
     <!-- FLEET -->
     <section id="fleet" class="panel" aria-label="Fleet">
       <h2>The Elite Fleet (Interactive)</h2>
-      <p>Use the search + filters. Click “Details” or “Book”.</p>
+      <p>Search + filters. Click “Details” or “Book”.</p>
 
       <div class="controls">
         <div class="search" title="Search cars">
@@ -288,7 +322,7 @@
       </div>
 
       <div class="fleet" id="fleetGrid"></div>
-      <p class="mini">Tip: tu peux ajouter de vraies images plus tard — ici c’est une maquette premium.</p>
+      <p class="mini">Les photos sont chargées automatiquement et le site reste 100% interactif.</p>
     </section>
 
     <!-- GOLD -->
@@ -418,7 +452,7 @@
           </div>
 
           <button class="btn primary" id="sendMsg">Send Message</button>
-          <p class="mini">This form is a demo (no database). For your assignment, it’s enough to show UX + validation.</p>
+          <p class="mini">Form demo (pas de base de données) — parfait pour montrer l’UX + validation.</p>
         </div>
 
         <div class="card mapbox">
@@ -433,7 +467,7 @@
             loading="lazy" referrerpolicy="no-referrer-when-downgrade"
             title="EasyGo Locations Map"></iframe>
 
-          <p class="mini">Sur Google Sites tu peux aussi intégrer une Map native (Insert → Map). Ici c’est interactif avec boutons.</p>
+          <p class="mini">Boutons interactifs → change la localisation (Airport/City/Hotel).</p>
         </div>
       </div>
     </section>
@@ -443,7 +477,7 @@
     </div>
   </div>
 
-  <!-- MODAL (Details + Booking) -->
+  <!-- MODAL -->
   <div class="backdrop" id="backdrop" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modal-head">
@@ -457,23 +491,6 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // ---------- Data ----------
-    const cars = [
-      { id:"a6", name:"Audi A6", cat:"Executive", seats:5, trans:"Automatic", price:120, perks:["Leather","Business comfort"] },
-      { id:"bmw5", name:"BMW 5 Series", cat:"Executive", seats:5, trans:"Automatic", price:130, perks:["Sport mode","Premium audio"] },
-      { id:"eclass", name:"Mercedes-Benz E-Class", cat:"Executive", seats:5, trans:"Automatic", price:140, perks:["Quiet cabin","Safety tech"] },
-
-      { id:"rrs", name:"Range Rover Sport", cat:"SUV", seats:5, trans:"Automatic", price:180, perks:["4x4","Luxury SUV"] },
-      { id:"modelx", name:"Tesla Model X", cat:"SUV", seats:7, trans:"Automatic", price:170, perks:["EV","AWD","Family space"] },
-      { id:"escalade", name:"Cadillac Escalade", cat:"SUV", seats:7, trans:"Automatic", price:220, perks:["VIP comfort","Full-size"] },
-
-      { id:"taycan", name:"Porsche Taycan", cat:"EV", seats:4, trans:"Automatic", price:200, perks:["Performance EV","Premium handling"] },
-      { id:"lucid", name:"Lucid Air", cat:"EV", seats:5, trans:"Automatic", price:190, perks:["Long range","Luxury EV"] },
-      { id:"model3", name:"Tesla Model 3", cat:"EV", seats:5, trans:"Automatic", price:110, perks:["Efficient","Smart features"] },
-    ];
-
-    const categories = ["All","Executive","SUV","EV"];
-
     // ---------- Helpers ----------
     const $ = (sel) => document.querySelector(sel);
     const $$ = (sel) => Array.from(document.querySelectorAll(sel));
@@ -498,6 +515,58 @@
 
     $("#browseBtn").addEventListener("click", ()=> goTo("#fleet"));
     $("#quickBookBtn").addEventListener("click", ()=> openBookingModal(null));
+
+    // ---------- Data (photos correspondantes) ----------
+    // Astuce: Special:FilePath gère l’URL automatiquement.
+    const cars = [
+      {
+        id:"a6", name:"Audi A6", cat:"Executive", seats:5, trans:"Automatic", price:120,
+        perks:["Leather","Business comfort"],
+        img:"https://commons.wikimedia.org/wiki/Special:FilePath/Audi%20A6%20C8.jpg"
+      },
+      {
+        id:"bmw5", name:"BMW 5 Series", cat:"Executive", seats:5, trans:"Automatic", price:130,
+        perks:["Sport mode","Premium audio"],
+        img:"https://commons.wikimedia.org/wiki/Special:FilePath/BMW%20G30%205-series.jpg"
+      },
+      {
+        id:"eclass", name:"Mercedes-Benz E-Class", cat:"Executive", seats:5, trans:"Automatic", price:140,
+        perks:["Quiet cabin","Safety tech"],
+        img:"https://commons.wikimedia.org/wiki/Special:FilePath/Mercedes-Benz%20W213.jpg"
+      },
+      {
+        id:"rrs", name:"Range%20Rover%20Sport", cat:"SUV", seats:5, trans:"Automatic", price:180,
+        perks:["4x4","Luxury SUV"],
+        img:"https://commons.wikimedia.org/wiki/Special:FilePath/Land%20Rover%20RANGE%20ROVER%20SPORT%20(L494)%20front.jpg"
+      },
+      {
+        id:"modelx", name:"Tesla Model X", cat:"SUV", seats:7, trans:"Automatic", price:170,
+        perks:["EV","AWD","Family space"],
+        img:"https://commons.wikimedia.org/wiki/Special:FilePath/TESLA%20MODEL%20X.jpg"
+      },
+      {
+        id:"escalade", name:"Cadillac Escalade", cat:"SUV", seats:7, trans:"Automatic", price:220,
+        perks:["VIP comfort","Full-size"],
+        img:"https://commons.wikimedia.org/wiki/Special:FilePath/Cadillac%20Escalade%20GMTT1XX.jpg"
+      },
+      {
+        id:"taycan", name:"Porsche Taycan", cat:"EV", seats:4, trans:"Automatic", price:200,
+        perks:["Performance EV","Premium handling"],
+        img:"https://commons.wikimedia.org/wiki/Special:FilePath/Porsche%20Taycan%203.jpg"
+      },
+      {
+        id:"lucid", name:"Lucid Air", cat:"EV", seats:5, trans:"Automatic", price:190,
+        perks:["Long range","Luxury EV"],
+        img:"https://commons.wikimedia.org/wiki/Special:FilePath/Lucid%20Air%20IAA%202023%201X7A0548.jpg"
+      },
+      {
+        id:"model3", name:"Tesla Model 3", cat:"EV", seats:5, trans:"Automatic", price:110,
+        perks:["Efficient","Smart features"],
+        img:"https://commons.wikimedia.org/wiki/Special:FilePath/Tesla%20Model3.jpg"
+      },
+    ];
+
+    const categories = ["All","Executive","SUV","EV"];
 
     // ---------- Chips ----------
     const chipsEl = $("#chips");
@@ -544,11 +613,15 @@
         el.className="car";
         el.innerHTML = `
           <div class="img">
-            <span class="pill">${car.cat}</span>
-            <span class="pill"><span class="price">$${car.price}</span>/day</span>
+            <img src="${car.img}" alt="${car.name}" loading="lazy"
+              onerror="this.style.display='none'; this.parentElement.style.background='radial-gradient(700px 260px at 20% 20%, rgba(122,167,255,.22), transparent 55%), radial-gradient(600px 260px at 80% 40%, rgba(167,139,250,.18), transparent 55%), rgba(11,15,26,.7)';">
+            <div class="overlay">
+              <span class="pill">${car.cat}</span>
+              <span class="pill"><span class="price">$${car.price}</span>/day</span>
+            </div>
           </div>
           <div class="body">
-            <p class="name">${car.name}</p>
+            <p class="name">${car.name.replaceAll("%20"," ")}</p>
             <div class="meta">${car.seats} seats • ${car.trans} • ${car.perks.join(" • ")}</div>
             <div class="actions">
               <button class="btn small" data-details="${car.id}">Details</button>
@@ -585,10 +658,15 @@
     function openDetailsModal(carId){
       const car = cars.find(c=> c.id===carId);
       if(!car) return;
+
       openModal("Vehicle Details", `
+        <div class="modal-photo">
+          <img src="${car.img}" alt="${car.name}" loading="lazy">
+        </div>
+
         <div class="card" style="margin-bottom:12px">
           <div class="tag">${car.cat}</div>
-          <h3 style="margin:10px 0 6px">${car.name}</h3>
+          <h3 style="margin:10px 0 6px">${car.name.replaceAll("%20"," ")}</h3>
           <p style="margin:0;color:var(--muted);line-height:1.6">
             ${car.seats} seats • ${car.trans} • ${car.perks.join(" • ")}
           </p>
@@ -615,7 +693,7 @@
     }
 
     function openBookingModal(carId){
-      const carOptions = cars.map(c=> `<option value="${c.id}" ${c.id===carId?"selected":""}>${c.name} — $${c.price}/day</option>`).join("");
+      const carOptions = cars.map(c=> `<option value="${c.id}" ${c.id===carId?"selected":""}>${c.name.replaceAll("%20"," ")} — $${c.price}/day</option>`).join("");
       openModal("Booking (Interactive Quote)", `
         <div class="two" style="margin-top:0">
           <div class="card">
@@ -704,8 +782,6 @@
         }
 
         const base = (car.price + add) * d;
-
-        // Gold perks: small discount + tank included (simulated) + longer grace
         const discount = mem==="gold" ? 0.08 : 0;
         const total = Math.round(base * (1 - discount));
 
@@ -751,7 +827,6 @@
     $("#openGoldBooking").addEventListener("click", ()=>{
       goldMode = true; applyGoldMode();
       openBookingModal(null);
-      // set membership to gold after modal open
       setTimeout(()=> { const sel = document.querySelector("#bkMem"); if(sel) sel.value="gold"; }, 50);
     });
 
